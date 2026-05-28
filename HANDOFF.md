@@ -76,9 +76,10 @@ In §19 order:
 - **Day 10+:** Chrome Web Store submission.
 
 **Day 7 caveats — still pending manual confirmation:**
-- The banner's injection anchor (`data-at="add_to_basket_btn_container"`) is the documented §9 selector and is what the e2e fixture mirrors, but the real Sephora DOM has not been verified by inspection — visit two or three live product pages and confirm the banner lands somewhere sensible (below "Add to Bag"). The anchor list in `src/content/banner.ts:findInjectionAnchor` already includes hyphen/underscore variants and the product-name `h1` as fallbacks, but a real-page check is still owed.
 - Visual layout / contrast / mobile-resize behavior have not been validated in a real Chrome window. jsdom can verify structure and text, not pixels.
 - `chrome.action.openPopup()` from the "Edit your routine" button is best-effort — Chrome only allows it from a user gesture in the active tab and may silently refuse. The service worker falls back to `chrome.runtime.openOptionsPage()`, but the options page is still a §11 stub, so the user lands on a near-empty screen until Day 7+ polish or Day 9.
+
+**Sephora extraction verified live (2026-05-28):** confirmed working against two real product pages (The Ordinary `P513222`, an Arencia/D'Alba-style "glow serum" `P517687`). Two layout patterns are now handled: (a) accordion trigger has `data-at="ingredients"` + the panel is `<div id="ingredients">`, content rendered only after a click — `src/content/sephora.ts:tryExpandIngredients` clicks the trigger idempotently; (b) per-brand "Key Ingredients" marketing prefix precedes the actual INCI list, sometimes a single paragraph with semicolons (The Ordinary), sometimes multiple `-` bulleted sentences mashed against the list (D'Alba). `parseIngredientText` strips both by sentence-splitting and picking the comma-densest segment. `looksLikeIngredients` uses multi-signal scoring (INCI keyword count, parenthesized water alias, comma density) rather than prefix-matching so brands whose lists don't begin with Aqua/Water still parse.
 
 Extension icons (`public/icons/icon-16.png`, `48`, `128`) are not generated yet; the `icons` block was removed from the manifest so the build wouldn't fail. Add icons before store submission.
 
