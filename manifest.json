@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "Routine Check",
+  "version": "0.1.0",
+  "description": "Know if a skincare product fits your current routine. Informational only — not medical advice.",
+  "permissions": ["storage"],
+  "host_permissions": ["https://www.sephora.com/*"],
+  "background": {
+    "service_worker": "src/background/service-worker.ts",
+    "type": "module"
+  },
+  "action": {
+    "default_popup": "src/popup/index.html",
+    "default_title": "Routine Check"
+  },
+  "options_page": "src/options/index.html",
+  "content_scripts": [
+    {
+      "matches": ["https://www.sephora.com/product/*"],
+      "js": ["src/content/sephora.ts"],
+      "run_at": "document_idle"
+    }
+  ]
+}

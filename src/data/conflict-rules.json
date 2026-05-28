@@ -1,0 +1,193 @@
+[
+  {
+    "id": "retinoid_aha_same_slot",
+    "ingredient_a": "retinoid",
+    "ingredient_b": "AHA",
+    "type": "conflict",
+    "same_slot_only": true,
+    "severity": "medium",
+    "short_message": "Retinoid + AHA in the same evening may stack irritation. Many dermatologists suggest alternating nights.",
+    "long_explanation": "Retinoids and alpha-hydroxy acids (glycolic, lactic, mandelic) both accelerate skin cell turnover. Using them in the same routine slot can cause cumulative dryness, redness, or flaking. A common dermatologist suggestion is to alternate evenings — for example, retinoid on Mon/Wed/Fri and the AHA on Tue/Thu/Sat — to keep the benefits of both with less cumulative irritation.",
+    "sources": [
+      "https://dermnetnz.org/topics/topical-retinoids",
+      "https://dermnetnz.org/topics/chemical-peels"
+    ]
+  },
+  {
+    "id": "retinoid_bha_same_slot",
+    "ingredient_a": "retinoid",
+    "ingredient_b": "BHA",
+    "type": "conflict",
+    "same_slot_only": true,
+    "severity": "medium",
+    "short_message": "Retinoid + BHA (salicylic acid) in the same evening may stack irritation. Many dermatologists suggest separating them.",
+    "long_explanation": "Retinoids and salicylic acid (the most common BHA) can each be drying and disruptive to the skin barrier on their own. Layered in the same routine slot, the effects can compound. A common dermatologist suggestion is to apply them on alternating evenings.",
+    "sources": [
+      "https://dermnetnz.org/topics/topical-retinoids",
+      "https://dermnetnz.org/topics/salicylic-acid"
+    ]
+  },
+  {
+    "id": "retinoid_benzoyl_peroxide_same_slot",
+    "ingredient_a": "retinoid",
+    "ingredient_b": "Benzoyl Peroxide",
+    "type": "conflict",
+    "same_slot_only": true,
+    "severity": "medium",
+    "short_message": "Most retinoids are degraded by benzoyl peroxide when applied together. Adapalene is the documented exception.",
+    "long_explanation": "Benzoyl peroxide oxidizes most retinoids (retinol, retinaldehyde, tretinoin), reducing their potency when both are applied at the same time. The well-documented exception is adapalene, which is chemically stable with benzoyl peroxide and is co-formulated with it in the prescription medication Epiduo. For other retinoids, a common dermatologist suggestion is to use benzoyl peroxide in the morning and the retinoid in the evening, or to alternate evenings.",
+    "sources": [
+      "https://dermnetnz.org/topics/topical-retinoids",
+      "https://dermnetnz.org/topics/benzoyl-peroxide"
+    ]
+  },
+  {
+    "id": "adapalene_benzoyl_peroxide_synergy",
+    "ingredient_a": "Adapalene",
+    "ingredient_b": "Benzoyl Peroxide",
+    "type": "synergy",
+    "same_slot_only": false,
+    "severity": "low",
+    "short_message": "Adapalene is stable with benzoyl peroxide — these two are commonly combined.",
+    "long_explanation": "Unlike other retinoids, adapalene is chemically stable in the presence of benzoyl peroxide. The combination is well-studied and sold as the prescription product Epiduo. This pair does not require slot separation, and this rule should override any broader retinoid + benzoyl peroxide warning when adapalene is the retinoid in question.",
+    "sources": [
+      "https://incidecoder.com/ingredients/adapalene",
+      "https://dermnetnz.org/topics/benzoyl-peroxide"
+    ]
+  },
+  {
+    "id": "ascorbic_acid_aha_same_slot",
+    "ingredient_a": "Ascorbic Acid",
+    "ingredient_b": "AHA",
+    "type": "caution",
+    "same_slot_only": true,
+    "severity": "low",
+    "short_message": "L-ascorbic acid + AHA in the same slot — both are low-pH and may stack a tingling or drying sensation.",
+    "long_explanation": "L-ascorbic acid (the most active vitamin C form) is formulated at a low pH around 3.5, as are AHAs. Layered in the same routine slot, the combination can cause cumulative stinging, dryness, or sensitivity. Many people tolerate the pair fine; if your skin is reactive, consider applying them at different times of day.",
+    "sources": [
+      "https://incidecoder.com/ingredients/ascorbic-acid",
+      "https://dermnetnz.org/topics/chemical-peels"
+    ]
+  },
+  {
+    "id": "ascorbic_acid_bha_same_slot",
+    "ingredient_a": "Ascorbic Acid",
+    "ingredient_b": "BHA",
+    "type": "caution",
+    "same_slot_only": true,
+    "severity": "low",
+    "short_message": "L-ascorbic acid + BHA in the same slot — both are low-pH and may stack a drying sensation.",
+    "long_explanation": "L-ascorbic acid is formulated at a low pH, similar to salicylic acid. Layering them in the same routine slot is generally well tolerated but can be irritating for sensitive skin. If you notice tingling or dryness, consider using them at different times of day.",
+    "sources": [
+      "https://incidecoder.com/ingredients/ascorbic-acid",
+      "https://dermnetnz.org/topics/salicylic-acid"
+    ]
+  },
+  {
+    "id": "multiple_ahas_same_slot",
+    "ingredient_a": "AHA",
+    "ingredient_b": "AHA",
+    "type": "conflict",
+    "same_slot_only": true,
+    "severity": "medium",
+    "short_message": "Multiple AHA products in the same slot can over-exfoliate. Many users find one is enough.",
+    "long_explanation": "Stacking multiple AHA products in the same routine slot (for example, a glycolic toner plus a lactic acid serum) increases the total dose of exfoliating acid on the skin. Over-exfoliation is a common cause of redness, dryness, and barrier sensitivity. Many people find a single AHA product gives the expected benefit with less risk.",
+    "sources": [
+      "https://dermnetnz.org/topics/chemical-peels"
+    ]
+  },
+  {
+    "id": "multiple_bhas_same_slot",
+    "ingredient_a": "BHA",
+    "ingredient_b": "BHA",
+    "type": "redundancy",
+    "same_slot_only": true,
+    "severity": "low",
+    "short_message": "Two BHA products in the same slot is usually redundant — one is typically enough.",
+    "long_explanation": "Salicylic acid (the most common BHA) is effective at 0.5–2%. Two BHA products in the same slot rarely add benefit and can increase dryness.",
+    "sources": [
+      "https://dermnetnz.org/topics/salicylic-acid"
+    ]
+  },
+  {
+    "id": "multiple_niacinamide",
+    "ingredient_a": "Niacinamide",
+    "ingredient_b": "Niacinamide",
+    "type": "redundancy",
+    "same_slot_only": false,
+    "severity": "low",
+    "short_message": "Niacinamide already appears in your routine. Adding another niacinamide product is often redundant.",
+    "long_explanation": "Niacinamide is effective in the 2–10% range. Stacking multiple niacinamide products typically does not increase benefit, and at very high totals some people report flushing or sensitivity.",
+    "sources": [
+      "https://incidecoder.com/ingredients/niacinamide"
+    ]
+  },
+  {
+    "id": "multiple_retinoids",
+    "ingredient_a": "retinoid",
+    "ingredient_b": "retinoid",
+    "type": "conflict",
+    "same_slot_only": false,
+    "severity": "high",
+    "short_message": "Multiple retinoids in your routine often stack irritation. Many dermatologists suggest picking one.",
+    "long_explanation": "Retinoids (retinol, retinaldehyde, tretinoin, adapalene) act on the same skin pathway. Using more than one — even in different slots — rarely adds benefit and commonly increases dryness, peeling, and sensitivity. A common dermatologist suggestion is to choose the strongest retinoid your skin tolerates and discontinue the others.",
+    "sources": [
+      "https://dermnetnz.org/topics/topical-retinoids"
+    ]
+  },
+  {
+    "id": "three_or_more_actives_same_slot",
+    "ingredient_a": "MULTI_ACTIVE",
+    "ingredient_b": "MULTI_ACTIVE",
+    "type": "caution",
+    "same_slot_only": true,
+    "severity": "medium",
+    "short_message": "Three or more actives in the same slot can stack irritation. Many derms suggest spacing them across slots.",
+    "long_explanation": "Active ingredients — retinoids, exfoliating acids, vitamin C, benzoyl peroxide — each carry some irritation risk. Combining three or more in a single routine slot multiplies that risk. A common approach is to anchor each slot with one strong active, supported by hydration and barrier ingredients (humectants, ceramides, panthenol).",
+    "sources": [
+      "https://dermnetnz.org/topics/topical-retinoids",
+      "https://dermnetnz.org/topics/chemical-peels"
+    ]
+  },
+  {
+    "id": "ascorbic_acid_retinoid_same_slot",
+    "ingredient_a": "Ascorbic Acid",
+    "ingredient_b": "retinoid",
+    "type": "conflict",
+    "same_slot_only": true,
+    "severity": "medium",
+    "short_message": "L-ascorbic acid (low pH) + retinoid in same slot can stack irritation. Many derms suggest separating them.",
+    "long_explanation": "L-ascorbic acid is formulated at a low pH, which can be irritating alongside a retinoid in the same routine slot — particularly at higher vitamin C concentrations (above 15%). A common pattern is vitamin C in the morning and the retinoid in the evening, which also takes advantage of vitamin C's antioxidant role alongside sunscreen during the day.",
+    "sources": [
+      "https://incidecoder.com/ingredients/ascorbic-acid",
+      "https://dermnetnz.org/topics/topical-retinoids"
+    ]
+  },
+  {
+    "id": "benzoyl_peroxide_aha_same_slot",
+    "ingredient_a": "Benzoyl Peroxide",
+    "ingredient_b": "AHA",
+    "type": "caution",
+    "same_slot_only": true,
+    "severity": "low",
+    "short_message": "Benzoyl peroxide + AHA in the same slot can stack dryness. Worth easing in slowly.",
+    "long_explanation": "Both benzoyl peroxide and AHAs can be drying. Combined in the same routine slot they multiply that effect. Many people tolerate the pair when introduced gradually; if irritation appears, consider alternating them across slots or evenings.",
+    "sources": [
+      "https://dermnetnz.org/topics/benzoyl-peroxide",
+      "https://dermnetnz.org/topics/chemical-peels"
+    ]
+  },
+  {
+    "id": "multiple_hyaluronic_acid",
+    "ingredient_a": "Sodium Hyaluronate",
+    "ingredient_b": "Sodium Hyaluronate",
+    "type": "redundancy",
+    "same_slot_only": false,
+    "severity": "low",
+    "short_message": "Hyaluronic acid already appears in your routine. Another HA product is often redundant.",
+    "long_explanation": "Hyaluronic acid is a humectant. Once your routine includes one hyaluronic acid–containing product, adding more typically does not increase hydration meaningfully.",
+    "sources": [
+      "https://incidecoder.com/ingredients/sodium-hyaluronate"
+    ]
+  }
+]

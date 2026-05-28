@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>The Ordinary Niacinamide 10% + Zinc 1% | Sephora</title>
+  </head>
+  <body>
+    <main>
+      <!--
+        Captured-style fixture mirroring the §9 selectors from PROJECT_BRIEF.md:
+          - Product name:  h1[data-at="product_name"]
+          - Brand:         a[data-at="brand_name"]
+          - Ingredients:   a plain comma-separated INCI list inside a section
+                           labeled "Ingredients" (Sephora ships it inside a
+                           collapsible accordion in production).
+        URL/host don't matter at this stage — route interception will be
+        wired by the content-script tests later.
+      -->
+      <a data-at="brand_name" href="/brand/the-ordinary">The Ordinary</a>
+      <h1 data-at="product_name">Niacinamide 10% + Zinc 1% Oil Control Serum</h1>
+
+      <section aria-label="Product details">
+        <h2>About the Product</h2>
+        <p>A high-strength vitamin and mineral blemish formula.</p>
+      </section>
+
+      <section data-at="ingredients_section">
+        <h2>Ingredients</h2>
+        <div>
+          <p>
+            Aqua (Water), Niacinamide, Pentylene Glycol, Zinc PCA, Dimethyl
+            Isosorbide, Tamarindus Indica Seed Gum, Xanthan Gum, Isoceteth-20,
+            Ethoxydiglycol, Phenoxyethanol, Chlorphenesin.
+          </p>
+        </div>
+      </section>
+
+      <div data-at="add_to_basket_btn_container">
+        <button type="button">Add to Basket</button>
+      </div>
+    </main>
+  </body>
+</html>

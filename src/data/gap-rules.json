@@ -1,0 +1,39 @@
+[
+  {
+    "id": "missing_spf_am",
+    "required_function": "sun_protection",
+    "slot": "AM",
+    "severity": "high",
+    "message": "No SPF detected in your AM routine. Many dermatologists consider daily SPF the most evidence-backed step for limiting sun-related changes in skin appearance."
+  },
+  {
+    "id": "missing_barrier_when_multi_active",
+    "required_function": "barrier_repair",
+    "slot": "either",
+    "severity": "medium",
+    "message": "Your routine includes multiple actives but no barrier-support product. Many people pair actives with a ceramide- or panthenol-containing product to support the skin barrier.",
+    "condition": "routine_active_count_gte:2"
+  },
+  {
+    "id": "missing_hydration",
+    "required_function": "hydration",
+    "slot": "either",
+    "severity": "low",
+    "message": "No humectant (hyaluronic acid, glycerin, panthenol, etc.) detected in your routine. Humectants are commonly used to draw water into the upper layers of the skin."
+  },
+  {
+    "id": "missing_antioxidant_am",
+    "required_function": "antioxidant",
+    "slot": "AM",
+    "severity": "low",
+    "message": "No antioxidant detected in your AM routine. Many people who care about visible signs of aging add a vitamin C serum in the morning to pair with sunscreen.",
+    "condition": "user_preference:anti_aging"
+  },
+  {
+    "id": "missing_cleanser",
+    "required_function": "cleanser",
+    "slot": "either",
+    "severity": "low",
+    "message": "No cleanser detected in your routine. A gentle cleanser is the typical starting point of both AM and PM routines."
+  }
+]

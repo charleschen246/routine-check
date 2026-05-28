@@ -1,0 +1,530 @@
+[
+  {
+    "inci": "Glycolic Acid",
+    "aliases": ["Hydroxyacetic Acid"],
+    "function": ["exfoliation_chemical", "anti_aging", "pigmentation"],
+    "category": "exfoliant",
+    "typical_pct_range": [5, 10],
+    "notes": "Smallest AHA molecule; deepest penetration. Increases sun sensitivity — daily SPF expected.",
+    "sources": [
+      "https://incidecoder.com/ingredients/glycolic-acid",
+      "https://dermnetnz.org/topics/chemical-peels"
+    ]
+  },
+  {
+    "inci": "Lactic Acid",
+    "aliases": ["2-Hydroxypropanoic Acid"],
+    "function": ["exfoliation_chemical", "hydration", "pigmentation"],
+    "category": "exfoliant",
+    "typical_pct_range": [5, 10],
+    "notes": "Larger molecule than glycolic; gentler. Acts as humectant at low concentrations.",
+    "sources": [
+      "https://incidecoder.com/ingredients/lactic-acid",
+      "https://dermnetnz.org/topics/chemical-peels"
+    ]
+  },
+  {
+    "inci": "Mandelic Acid",
+    "aliases": ["Amygdalic Acid", "Phenylglycolic Acid"],
+    "function": ["exfoliation_chemical", "pigmentation", "acne_treatment"],
+    "category": "exfoliant",
+    "typical_pct_range": [5, 10],
+    "notes": "Large-molecule AHA derived from bitter almonds; among the gentlest AHAs. Often used by people with sensitive or acne-prone skin.",
+    "sources": [
+      "https://incidecoder.com/ingredients/mandelic-acid"
+    ]
+  },
+  {
+    "inci": "Salicylic Acid",
+    "aliases": ["BHA", "2-Hydroxybenzoic Acid"],
+    "function": ["exfoliation_chemical", "acne_treatment"],
+    "category": "exfoliant",
+    "typical_pct_range": [0.5, 2],
+    "notes": "Oil-soluble; penetrates sebum to exfoliate inside pores. Often used by people with acne-prone or oily skin.",
+    "sources": [
+      "https://incidecoder.com/ingredients/salicylic-acid",
+      "https://dermnetnz.org/topics/salicylic-acid"
+    ]
+  },
+  {
+    "inci": "Gluconolactone",
+    "aliases": ["PHA", "D-Gluconic Acid Lactone"],
+    "function": ["exfoliation_chemical", "hydration", "antioxidant"],
+    "category": "exfoliant",
+    "typical_pct_range": [4, 10],
+    "notes": "Polyhydroxy acid — larger molecule, slower exfoliation, less irritation than AHAs. Also a humectant.",
+    "sources": [
+      "https://incidecoder.com/ingredients/gluconolactone"
+    ]
+  },
+  {
+    "inci": "Lactobionic Acid",
+    "aliases": ["PHA", "4-O-β-D-Galactopyranosyl-D-Gluconic Acid"],
+    "function": ["exfoliation_chemical", "hydration", "antioxidant"],
+    "category": "exfoliant",
+    "typical_pct_range": [4, 10],
+    "notes": "Polyhydroxy acid; gentler than AHA/BHA. Strong humectant; some antioxidant activity.",
+    "sources": [
+      "https://incidecoder.com/ingredients/lactobionic-acid"
+    ]
+  },
+  {
+    "inci": "Retinol",
+    "aliases": ["Vitamin A", "All-Trans Retinol"],
+    "function": ["anti_aging", "acne_treatment", "pigmentation"],
+    "category": "retinoid",
+    "typical_pct_range": [0.1, 1],
+    "notes": "OTC retinoid; converts in skin to retinaldehyde then retinoic acid. Often used in routines for fine lines and texture.",
+    "sources": [
+      "https://incidecoder.com/ingredients/retinol",
+      "https://dermnetnz.org/topics/topical-retinoids"
+    ]
+  },
+  {
+    "inci": "Retinaldehyde",
+    "aliases": ["Retinal", "Vitamin A Aldehyde"],
+    "function": ["anti_aging", "acne_treatment"],
+    "category": "retinoid",
+    "typical_pct_range": [0.05, 0.1],
+    "notes": "One conversion step from retinoic acid; potentially faster-acting than retinol at lower concentrations.",
+    "sources": [
+      "https://incidecoder.com/ingredients/retinal",
+      "https://dermnetnz.org/topics/topical-retinoids"
+    ]
+  },
+  {
+    "inci": "Retinyl Palmitate",
+    "aliases": ["Vitamin A Palmitate", "Retinol Palmitate"],
+    "function": ["anti_aging"],
+    "category": "retinoid",
+    "typical_pct_range": [0.1, 1],
+    "notes": "Ester form of retinol; multiple conversion steps required, making it the weakest common OTC retinoid.",
+    "sources": [
+      "https://incidecoder.com/ingredients/retinyl-palmitate"
+    ]
+  },
+  {
+    "inci": "Adapalene",
+    "aliases": ["Differin"],
+    "function": ["acne_treatment", "anti_aging"],
+    "category": "retinoid",
+    "typical_pct_range": [0.1, 0.3],
+    "notes": "Synthetic third-generation retinoid; OTC in the US since 2016 at 0.1%. Notably stable with benzoyl peroxide (basis of the Epiduo combination).",
+    "sources": [
+      "https://incidecoder.com/ingredients/adapalene",
+      "https://pubmed.ncbi.nlm.nih.gov/34812859/"
+    ]
+  },
+  {
+    "inci": "Tretinoin",
+    "aliases": ["All-Trans Retinoic Acid", "ATRA", "Retin-A"],
+    "function": ["anti_aging", "acne_treatment", "pigmentation"],
+    "category": "retinoid",
+    "typical_pct_range": [0.025, 0.1],
+    "notes": "Prescription-only retinoid in the US — discuss use with your dermatologist.",
+    "sources": [
+      "https://incidecoder.com/ingredients/tretinoin",
+      "https://dermnetnz.org/topics/topical-retinoids"
+    ]
+  },
+  {
+    "inci": "Bakuchiol",
+    "aliases": ["Babchi Extract"],
+    "function": ["anti_aging"],
+    "category": "retinoid",
+    "typical_pct_range": [0.5, 1],
+    "notes": "Plant-derived compound from Psoralea corylifolia, marketed as a retinol alternative. Mechanism differs from true retinoids; small studies suggest comparable photoaging effects with less irritation.",
+    "sources": [
+      "https://incidecoder.com/ingredients/bakuchiol",
+      "https://pubmed.ncbi.nlm.nih.gov/29947134/"
+    ]
+  },
+  {
+    "inci": "Ascorbic Acid",
+    "aliases": ["L-Ascorbic Acid", "Vitamin C", "LAA"],
+    "function": ["antioxidant", "pigmentation", "anti_aging"],
+    "category": "antioxidant",
+    "typical_pct_range": [10, 20],
+    "notes": "Most-studied vitamin C form; unstable in water and at high pH. Often used in AM routines for photo-protection synergy with sunscreen.",
+    "sources": [
+      "https://incidecoder.com/ingredients/ascorbic-acid",
+      "https://pubmed.ncbi.nlm.nih.gov/29104718/"
+    ]
+  },
+  {
+    "inci": "Sodium Ascorbyl Phosphate",
+    "aliases": ["SAP"],
+    "function": ["antioxidant", "pigmentation", "acne_treatment"],
+    "category": "antioxidant",
+    "typical_pct_range": [1, 5],
+    "notes": "Water-soluble, stable vitamin C derivative; gentler than L-ascorbic acid. Also studied for acne-prone skin.",
+    "sources": [
+      "https://incidecoder.com/ingredients/sodium-ascorbyl-phosphate"
+    ]
+  },
+  {
+    "inci": "Magnesium Ascorbyl Phosphate",
+    "aliases": ["MAP"],
+    "function": ["antioxidant", "pigmentation", "hydration"],
+    "category": "antioxidant",
+    "typical_pct_range": [1, 10],
+    "notes": "Water-soluble, stable vitamin C derivative; well tolerated and often used in routines for sensitive skin.",
+    "sources": [
+      "https://incidecoder.com/ingredients/magnesium-ascorbyl-phosphate"
+    ]
+  },
+  {
+    "inci": "Ascorbyl Glucoside",
+    "aliases": ["AA2G"],
+    "function": ["antioxidant", "pigmentation"],
+    "category": "antioxidant",
+    "typical_pct_range": [2, 5],
+    "notes": "Stable vitamin C derivative; converts to ascorbic acid in skin slowly via enzymatic hydrolysis.",
+    "sources": [
+      "https://incidecoder.com/ingredients/ascorbyl-glucoside"
+    ]
+  },
+  {
+    "inci": "Tetrahexyldecyl Ascorbate",
+    "aliases": ["THD Ascorbate", "Ascorbyl Tetraisopalmitate", "BV-OSC"],
+    "function": ["antioxidant", "pigmentation", "anti_aging"],
+    "category": "antioxidant",
+    "typical_pct_range": [3, 10],
+    "notes": "Lipid-soluble vitamin C ester; stable in anhydrous formulas. Generally well tolerated.",
+    "sources": [
+      "https://incidecoder.com/ingredients/tetrahexyldecyl-ascorbate"
+    ]
+  },
+  {
+    "inci": "Sodium Hyaluronate",
+    "aliases": ["Hyaluronic Acid", "HA", "Hydrolyzed Hyaluronic Acid"],
+    "function": ["hydration"],
+    "category": "humectant",
+    "typical_pct_range": [0.1, 2],
+    "comedogenic_rating": 0,
+    "notes": "Salt form of hyaluronic acid; lighter and more stable in formulation. Multiple molecular weights are often blended for layered hydration.",
+    "sources": [
+      "https://incidecoder.com/ingredients/sodium-hyaluronate"
+    ]
+  },
+  {
+    "inci": "Glycerin",
+    "aliases": ["Glycerine", "Glycerol"],
+    "function": ["hydration", "barrier_repair"],
+    "category": "humectant",
+    "typical_pct_range": [3, 10],
+    "comedogenic_rating": 0,
+    "notes": "Workhorse humectant; supports the skin barrier. Found in most moisturizers and serums.",
+    "sources": [
+      "https://incidecoder.com/ingredients/glycerin"
+    ]
+  },
+  {
+    "inci": "Panthenol",
+    "aliases": ["Pro-Vitamin B5", "D-Panthenol", "Dexpanthenol"],
+    "function": ["hydration", "barrier_repair", "soothing"],
+    "category": "humectant",
+    "typical_pct_range": [1, 5],
+    "comedogenic_rating": 0,
+    "notes": "Converts to pantothenic acid (B5) in skin. Often used in routines for compromised or irritated skin.",
+    "sources": [
+      "https://incidecoder.com/ingredients/panthenol"
+    ]
+  },
+  {
+    "inci": "Urea",
+    "aliases": ["Carbamide"],
+    "function": ["hydration", "exfoliation_chemical"],
+    "category": "humectant",
+    "typical_pct_range": [2, 10],
+    "notes": "Humectant at low percentages; mildly keratolytic at higher percentages (>10%). Component of natural moisturizing factor.",
+    "sources": [
+      "https://incidecoder.com/ingredients/urea",
+      "https://dermnetnz.org/topics/urea"
+    ]
+  },
+  {
+    "inci": "Beta-Glucan",
+    "aliases": ["β-Glucan", "Oat Beta-Glucan"],
+    "function": ["hydration", "soothing", "barrier_repair"],
+    "category": "humectant",
+    "typical_pct_range": [0.1, 1],
+    "notes": "Polysaccharide commonly sourced from oats or yeast. Often used in routines for sensitive or reactive skin.",
+    "sources": [
+      "https://incidecoder.com/ingredients/beta-glucan"
+    ]
+  },
+  {
+    "inci": "Ceramides",
+    "aliases": ["Ceramide NP", "Ceramide AP", "Ceramide EOP", "Ceramide NG", "Ceramide NS"],
+    "function": ["barrier_repair"],
+    "category": "other",
+    "typical_pct_range": [0.1, 2],
+    "comedogenic_rating": 0,
+    "notes": "Lipid family naturally present in the stratum corneum. Often used in routines focused on barrier support.",
+    "sources": [
+      "https://incidecoder.com/ingredients/ceramide-np",
+      "https://pubmed.ncbi.nlm.nih.gov/26844894/"
+    ]
+  },
+  {
+    "inci": "Squalane",
+    "aliases": ["Hydrogenated Squalene", "Phytosqualane"],
+    "function": ["hydration", "barrier_repair"],
+    "category": "emollient",
+    "typical_pct_range": [1, 100],
+    "comedogenic_rating": 0,
+    "notes": "Saturated, stable form of squalene. Lightweight emollient; well tolerated by most skin types.",
+    "sources": [
+      "https://incidecoder.com/ingredients/squalane"
+    ]
+  },
+  {
+    "inci": "Petrolatum",
+    "aliases": ["Petroleum Jelly", "Vaseline", "White Petrolatum"],
+    "function": ["barrier_repair"],
+    "category": "occlusive",
+    "typical_pct_range": [1, 100],
+    "comedogenic_rating": 0,
+    "notes": "Highly effective occlusive — reduces transepidermal water loss by ~99%. Cosmetic-grade is non-comedogenic.",
+    "sources": [
+      "https://incidecoder.com/ingredients/petrolatum"
+    ]
+  },
+  {
+    "inci": "Dimethicone",
+    "aliases": ["PDMS", "Polydimethylsiloxane"],
+    "function": ["barrier_repair"],
+    "category": "occlusive",
+    "typical_pct_range": [1, 15],
+    "comedogenic_rating": 0,
+    "notes": "Silicone-based occlusive; breathable compared to petrolatum. Non-comedogenic despite common myth.",
+    "sources": [
+      "https://incidecoder.com/ingredients/dimethicone"
+    ]
+  },
+  {
+    "inci": "Butyrospermum Parkii Butter",
+    "aliases": ["Shea Butter"],
+    "function": ["hydration", "barrier_repair"],
+    "category": "emollient",
+    "typical_pct_range": [1, 20],
+    "comedogenic_rating": 2,
+    "notes": "Plant butter rich in fatty acids; rated low-to-moderate comedogenicity. Some people with acne-prone skin avoid.",
+    "sources": [
+      "https://incidecoder.com/ingredients/butyrospermum-parkii-butter"
+    ]
+  },
+  {
+    "inci": "Cholesterol",
+    "aliases": [],
+    "function": ["barrier_repair"],
+    "category": "emollient",
+    "typical_pct_range": [0.5, 5],
+    "comedogenic_rating": 0,
+    "notes": "Skin-barrier lipid; commonly paired with ceramides and fatty acids at roughly 1:1:1 in barrier-support formulas.",
+    "sources": [
+      "https://incidecoder.com/ingredients/cholesterol"
+    ]
+  },
+  {
+    "inci": "Niacinamide",
+    "aliases": ["Nicotinamide", "Vitamin B3"],
+    "function": ["pigmentation", "acne_treatment", "barrier_repair", "anti_aging"],
+    "category": "other",
+    "typical_pct_range": [2, 10],
+    "comedogenic_rating": 0,
+    "notes": "Multi-functional active. Often used in routines for hyperpigmentation, sebum balance, and barrier support. Stable; compatible with most other ingredients including vitamin C in modern formulations.",
+    "sources": [
+      "https://incidecoder.com/ingredients/niacinamide",
+      "https://pubmed.ncbi.nlm.nih.gov/24993939/"
+    ]
+  },
+  {
+    "inci": "Azelaic Acid",
+    "aliases": [],
+    "function": ["acne_treatment", "pigmentation", "soothing"],
+    "category": "other",
+    "typical_pct_range": [10, 20],
+    "notes": "Dicarboxylic acid. Often used by people with acne-prone skin and uneven tone. OTC at up to 10% in the US; 15–20% is prescription.",
+    "sources": [
+      "https://incidecoder.com/ingredients/azelaic-acid",
+      "https://dermnetnz.org/topics/azelaic-acid"
+    ]
+  },
+  {
+    "inci": "Tranexamic Acid",
+    "aliases": ["TXA"],
+    "function": ["pigmentation"],
+    "category": "other",
+    "typical_pct_range": [2, 5],
+    "notes": "Synthetic amino acid derivative; often used in routines focused on uneven skin tone and dark spots.",
+    "sources": [
+      "https://incidecoder.com/ingredients/tranexamic-acid",
+      "https://pubmed.ncbi.nlm.nih.gov/37026889/"
+    ]
+  },
+  {
+    "inci": "Alpha-Arbutin",
+    "aliases": ["α-Arbutin", "Arbutin"],
+    "function": ["pigmentation"],
+    "category": "other",
+    "typical_pct_range": [1, 2],
+    "notes": "Glycosylated hydroquinone derivative; tyrosinase inhibitor. Often used in routines focused on hyperpigmentation.",
+    "sources": [
+      "https://incidecoder.com/ingredients/alpha-arbutin"
+    ]
+  },
+  {
+    "inci": "Kojic Acid",
+    "aliases": [],
+    "function": ["pigmentation", "antioxidant"],
+    "category": "other",
+    "typical_pct_range": [1, 4],
+    "notes": "Fungal-derived tyrosinase inhibitor. May cause contact sensitization at higher concentrations.",
+    "sources": [
+      "https://incidecoder.com/ingredients/kojic-acid",
+      "https://pubmed.ncbi.nlm.nih.gov/32720446/"
+    ]
+  },
+  {
+    "inci": "Peptides",
+    "aliases": ["Palmitoyl Tripeptide-1", "Palmitoyl Pentapeptide-4", "Copper Tripeptide-1", "Matrixyl", "GHK-Cu", "Argireline"],
+    "function": ["anti_aging", "barrier_repair"],
+    "category": "other",
+    "typical_pct_range": [0.5, 10],
+    "notes": "Broad family of short amino acid chains. Often used in anti-aging routines; evidence quality varies by specific peptide.",
+    "sources": [
+      "https://incidecoder.com/ingredients/palmitoyl-tripeptide-1",
+      "https://pubmed.ncbi.nlm.nih.gov/18492182/"
+    ]
+  },
+  {
+    "inci": "Centella Asiatica Extract",
+    "aliases": ["Cica", "Gotu Kola", "Tiger Grass"],
+    "function": ["soothing", "barrier_repair", "antioxidant"],
+    "category": "soothing",
+    "typical_pct_range": [0.1, 5],
+    "notes": "Plant extract containing madecassoside, asiaticoside, and related triterpenes. Often used in routines for compromised or sensitive skin.",
+    "sources": [
+      "https://incidecoder.com/ingredients/centella-asiatica-extract"
+    ]
+  },
+  {
+    "inci": "Allantoin",
+    "aliases": [],
+    "function": ["soothing", "hydration", "barrier_repair"],
+    "category": "soothing",
+    "typical_pct_range": [0.1, 2],
+    "comedogenic_rating": 0,
+    "notes": "Compatible with most ingredient combinations.",
+    "sources": [
+      "https://incidecoder.com/ingredients/allantoin"
+    ]
+  },
+  {
+    "inci": "Madecassoside",
+    "aliases": [],
+    "function": ["soothing", "anti_aging", "barrier_repair"],
+    "category": "soothing",
+    "typical_pct_range": [0.1, 1],
+    "notes": "Isolated active from Centella asiatica; often used in routines aimed at supporting compromised or reactive skin.",
+    "sources": [
+      "https://incidecoder.com/ingredients/madecassoside"
+    ]
+  },
+  {
+    "inci": "Benzoyl Peroxide",
+    "aliases": ["BPO", "BP"],
+    "function": ["acne_treatment"],
+    "category": "antimicrobial",
+    "typical_pct_range": [2.5, 10],
+    "notes": "OTC acne active. Oxidizes most retinoids if applied at the same time — adapalene is the documented exception (Epiduo combines them). May bleach fabric.",
+    "sources": [
+      "https://incidecoder.com/ingredients/benzoyl-peroxide",
+      "https://dermnetnz.org/topics/benzoyl-peroxide"
+    ]
+  },
+  {
+    "inci": "Sulfur",
+    "aliases": ["Colloidal Sulfur"],
+    "function": ["acne_treatment"],
+    "category": "antimicrobial",
+    "typical_pct_range": [2, 10],
+    "notes": "Exfoliating and antimicrobial. Often used in routines by people with acne-prone or oily skin.",
+    "sources": [
+      "https://incidecoder.com/ingredients/sulfur",
+      "https://pubmed.ncbi.nlm.nih.gov/32356369/"
+    ]
+  },
+  {
+    "inci": "Zinc Oxide",
+    "aliases": ["ZnO"],
+    "function": ["sun_protection"],
+    "category": "sunscreen",
+    "typical_pct_range": [5, 25],
+    "comedogenic_rating": 0,
+    "notes": "Mineral UV filter with broad-spectrum coverage (UVB + UVA). FDA-approved.",
+    "sources": [
+      "https://incidecoder.com/ingredients/zinc-oxide",
+      "https://dermnetnz.org/topics/sun-protection"
+    ]
+  },
+  {
+    "inci": "Titanium Dioxide",
+    "aliases": ["TiO2"],
+    "function": ["sun_protection"],
+    "category": "sunscreen",
+    "typical_pct_range": [2, 25],
+    "comedogenic_rating": 0,
+    "notes": "Mineral UV filter — strong UVB and UVA II protection; weaker UVA I. Often combined with zinc oxide for full coverage.",
+    "sources": [
+      "https://incidecoder.com/ingredients/titanium-dioxide",
+      "https://dermnetnz.org/topics/sun-protection"
+    ]
+  },
+  {
+    "inci": "Avobenzone",
+    "aliases": ["Butyl Methoxydibenzoylmethane", "Parsol 1789"],
+    "function": ["sun_protection"],
+    "category": "sunscreen",
+    "typical_pct_range": [1, 3],
+    "notes": "Organic UVA filter. Photo-unstable on its own; commonly stabilized with octocrylene or other photo-stabilizers.",
+    "sources": [
+      "https://incidecoder.com/ingredients/butyl-methoxydibenzoylmethane"
+    ]
+  },
+  {
+    "inci": "Octinoxate",
+    "aliases": ["Ethylhexyl Methoxycinnamate", "OMC", "Octyl Methoxycinnamate"],
+    "function": ["sun_protection"],
+    "category": "sunscreen",
+    "typical_pct_range": [2, 7.5],
+    "notes": "Organic UVB filter. Restricted in some jurisdictions (e.g., Hawaii reef-safety legislation).",
+    "sources": [
+      "https://incidecoder.com/ingredients/ethylhexyl-methoxycinnamate"
+    ]
+  },
+  {
+    "inci": "Bis-Ethylhexyloxyphenol Methoxyphenyl Triazine",
+    "aliases": ["Tinosorb S", "BEMT", "Bemotrizinol"],
+    "function": ["sun_protection"],
+    "category": "sunscreen",
+    "typical_pct_range": [1, 10],
+    "notes": "Broad-spectrum organic UV filter (UVB + UVA). Approved in EU, Asia, Australia; not currently FDA-approved for use in US sunscreens.",
+    "sources": [
+      "https://incidecoder.com/ingredients/bis-ethylhexyloxyphenol-methoxyphenyl-triazine"
+    ]
+  },
+  {
+    "inci": "Methylene Bis-Benzotriazolyl Tetramethylbutylphenol",
+    "aliases": ["Tinosorb M", "MBBT", "Bisoctrizole"],
+    "function": ["sun_protection"],
+    "category": "sunscreen",
+    "typical_pct_range": [1, 10],
+    "notes": "Particulate organic UV filter with broad-spectrum activity. Approved in EU, Asia, Australia; not currently FDA-approved for use in US sunscreens.",
+    "sources": [
+      "https://incidecoder.com/ingredients/methylene-bis-benzotriazolyl-tetramethylbutylphenol"
+    ]
+  }
+]
