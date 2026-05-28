@@ -71,7 +71,7 @@ All 80 tests pass. Run via `npm test`.
 
 In §19 order:
 
-- **Day 8 (drafted; hosting pending owner action — see "Publishing the legal docs" below):** `docs/privacy-policy.md` and `docs/terms-of-service.md` are written from the §16.5 / §16.6 templates with `cchen4172@gmail.com` as the contact and New York as the governing-law venue. `docs/_config.yml` and `docs/index.md` make the folder GitHub-Pages-ready (Jekyll minimal theme, landing page that links to both documents). The popup footer and the options page both link to `https://charleschen246.github.io/routine-check/{privacy-policy,terms-of-service}.html` via constants in `src/lib/links.ts`. Those URLs are not live yet — the owner needs to push to GitHub and enable Pages (steps below). The §16.4 in-product disclaimer is unchanged and still verbatim in both popup and options.
+- **Day 8 (published 2026-05-27):** Legal docs are written, the project is pushed to `github.com/charleschen246/routine-check` (public), and GitHub Pages is enabled from `main:/docs`. `docs/privacy-policy.md` and `docs/terms-of-service.md` use the §16.5 / §16.6 templates with `cchen4172@gmail.com` as the contact and New York as the governing-law venue. The popup footer and the options page both link to `https://charleschen246.github.io/routine-check/{privacy-policy,terms-of-service}.html` via constants in `src/lib/links.ts`. The §16.4 in-product disclaimer is verbatim in both popup and options.
 - **Day 9:** §16.10 pre-submission checklist walkthrough.
 - **Day 10+:** Chrome Web Store submission.
 
