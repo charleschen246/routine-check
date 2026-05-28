@@ -80,7 +80,7 @@ describe('parseIngredientText', () => {
     expect(parseIngredientText(raw)).toEqual([
       'Water',
       'Glycerin',
-      'Niacinamide.',
+      'Niacinamide',
     ]);
   });
 
@@ -112,6 +112,37 @@ describe('parseIngredientText', () => {
       'Water',
       'Glycerin',
     ]);
+  });
+
+  it('strips a Sephora "Key Ingredient" marketing blurb before the INCI list', () => {
+    const raw =
+      '-Niacinamide: Improves the look of uneven skin tone; targets the look of discoloration and dark spots; promotes visible skin radiance. Aqua (Water), Ethyl Macadamiate, Niacinamide, Propanediol, Glycerin, Sphingomonas Ferment Extract, Phenoxyethanol.';
+    expect(parseIngredientText(raw)).toEqual([
+      'Aqua',
+      'Ethyl Macadamiate',
+      'Niacinamide',
+      'Propanediol',
+      'Glycerin',
+      'Sphingomonas Ferment Extract',
+      'Phenoxyethanol',
+    ]);
+  });
+
+  it('strips a multi-bullet "Key Ingredients" blurb whose INCI list does not start with water', () => {
+    // Real Sephora pattern (e.g., D'Alba glow serum): a series of "- Name:
+    // description." bullets, then the actual INCI list runs together with
+    // no separator and starts with the brand's hero active, not water.
+    const raw =
+      '- Propolis Extract: Hydrates and soothes reactive skin.        - Niacinamide: Absorbs sebum and improves the look of texture and fine lines.- BHA: Gently exfoliates, absorbs sebum, and refines pores.Propolis Extract, Dipropylene Glycol, Glycerin, Butylene Glycol, Water, Niacinamide, 1,2-Hexanediol, Sodium Hyaluronate, Tocopherol, Phenoxyethanol.';
+    const result = parseIngredientText(raw);
+    expect(result).toContain('Propolis Extract');
+    expect(result).toContain('Glycerin');
+    expect(result).toContain('Niacinamide');
+    expect(result).toContain('Sodium Hyaluronate');
+    expect(result).toContain('Phenoxyethanol');
+    // None of the marketing-prose tokens should leak through.
+    expect(result.some((t) => t.toLowerCase().includes('reactive skin'))).toBe(false);
+    expect(result.some((t) => t.toLowerCase().includes('refines pores'))).toBe(false);
   });
 });
 
@@ -162,6 +193,22 @@ describe('findIngredientsText', () => {
       <p>A short description with no comma-separated ingredient list.</p>
     `);
     expect(findIngredientsText(doc)).toBeNull();
+  });
+
+  it('prefers <div id="ingredients"> over a data-at="ingredients" trigger button', () => {
+    // Current Sephora layout: data-at="ingredients" is on the accordion
+    // trigger button whose text content is only "Ingredients"; the actual
+    // INCI list lives in a sibling <div id="ingredients">. The trigger's
+    // text should be ignored, and the panel's text returned.
+    const doc = makeDoc(`
+      <button data-at="ingredients" aria-controls="ingredients" aria-expanded="true">Ingredients</button>
+      <div id="ingredients">
+        Aqua (Water), Niacinamide, Glycerin, Pentylene Glycol, Phenoxyethanol
+      </div>
+    `);
+    const text = findIngredientsText(doc);
+    expect(text).toContain('Aqua (Water)');
+    expect(text).toContain('Niacinamide');
   });
 });
 

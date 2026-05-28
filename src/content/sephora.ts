@@ -15,8 +15,23 @@ import { showBanner } from './banner';
 // flaky networks without leaving the observer running forever.
 const HYDRATION_TIMEOUT_MS = 8000;
 
+// Sephora keeps the ingredient list collapsed behind an accordion. Click the
+// trigger so the panel content renders into the DOM — without this, the
+// extractor has nothing to read. Selector is the same data-at attribute the
+// trigger button has shipped with for at least the last layout revision; the
+// aria-expanded guard makes the click idempotent (a re-click would collapse
+// the panel and undo the previous open).
+function tryExpandIngredients(doc: Document = document): void {
+  const trigger = doc.querySelector(
+    '[data-at="ingredients"][aria-expanded="false"]',
+  );
+  if (trigger instanceof HTMLElement) trigger.click();
+}
+
 async function main(): Promise<void> {
   if (!isProductPage(location.href)) return;
+
+  tryExpandIngredients();
 
   const product = await waitForProduct();
   if (!product) {
@@ -64,6 +79,7 @@ function waitForProduct(): Promise<ExtractedProduct | null> {
     };
 
     const observer = new MutationObserver(() => {
+      tryExpandIngredients();
       const attempt = extractProduct(document, location.href);
       if (attempt.product) finish(attempt.product);
     });

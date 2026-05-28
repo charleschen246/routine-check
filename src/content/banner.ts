@@ -317,6 +317,11 @@ export function findInjectionAnchor(doc: Document): Element | null {
   const candidates = [
     '[data-at="add_to_basket_btn_container"]',
     '[data-at="add-to-basket-btn-container"]',
+    // Current Sephora layout: the button itself carries the data-at attribute,
+    // with a "_small_view" duplicate for the mobile breakpoint. Inserting
+    // after either is fine — only the visible one has a visible parent.
+    'button[data-at="add_to_basket_btn"]',
+    'button[data-at="add_to_basket_btn_small_view"]',
     'button[data-at="add-to-basket-btn"]',
     'button[data-at="add_to_basket"]',
     'h1[data-at="product_name"]',

@@ -40,11 +40,38 @@ export function parseSku(url: string): string {
   }
 }
 
+// Find the INCI list within a text blob that may include a "Key Ingredient"
+// marketing prefix. Sephora brands prefix the panel with varied formats:
+// "-Niacinamide: ... promotes visible skin radiance. Aqua (Water), ...",
+// "- Propolis Extract: hydrates...- BHA: gently exfoliates...Propolis
+// Extract, Dipropylene Glycol, ...", etc. The reliable signal is that the
+// INCI list is by far the comma-densest part of the text. Split on sentence
+// boundaries (period + space/uppercase/hyphen) and keep the densest segment.
+function extractInciSegment(text: string): string {
+  const parts = text.split(/\.(?:\s+|(?=[A-Z\-]))/);
+  if (parts.length <= 1) return text;
+
+  let best = parts[0];
+  let bestCommas = (parts[0].match(/,/g) ?? []).length;
+  for (const p of parts.slice(1)) {
+    const c = (p.match(/,/g) ?? []).length;
+    if (c > bestCommas) {
+      best = p;
+      bestCommas = c;
+    }
+  }
+  // Only slice if the densest segment is clearly an INCI list, otherwise
+  // return the original so short ingredient lists (3–4 items) still parse.
+  return bestCommas >= 5 ? best.trim() : text;
+}
+
 export function parseIngredientText(raw: string): string[] {
   let text = raw;
 
   // Drop a leading "Ingredients:" / "Ingredients —" header.
   text = text.replace(/^\s*ingredients\b[\s:—\-–]*/i, '');
+
+  text = extractInciSegment(text);
 
   // Drop the "May Contain" / "+/-" colorant section — these are CI dyes that
   // shouldn't be treated as actives even if a future rule were added.
@@ -55,32 +82,62 @@ export function parseIngredientText(raw: string): string[] {
 
   const tokens = text.split(/[,;\n]/);
   return tokens
-    .map((t) => t.trim().replace(/[*+†‡]+$/g, '').trim())
+    .map((t) => t.trim().replace(/[*+†‡.]+$/g, '').trim())
     .filter((t) => t.length > 0);
 }
 
-// "Looks like an INCI list" heuristic: long enough, comma-separated, and
-// either explicitly headed by "Ingredients" or starts with a water alias.
+// "Looks like an INCI list" detector. Sephora's per-brand prefixes vary too
+// much for prefix matching to be reliable (some lists start with Aqua, some
+// with Propolis Extract, some with a brand's hero active), so the strategy
+// is signal-based: count INCI-shaped tokens, parenthesized water aliases,
+// and overall comma density, and accept anything with strong signals.
+const INCI_KEYWORDS = /\b(?:aqua|glycerin|niacinamide|tocopherol|phenoxyethanol|propanediol|butylene\s+glycol|dipropylene\s+glycol|cetearyl|hyaluronate|xanthan\s+gum|sodium\s+hydroxide|disodium\s+edta|ethylhexylglycerin|caprylic|behenyl|stearyl|cetyl\s+alcohol|panthenol|allantoin|hexanediol|polysorbate|carbomer|tromethamine)\b/gi;
+
 function looksLikeIngredients(text: string): boolean {
   const t = text.trim();
   if (t.length < 30) return false;
   const commaCount = (t.match(/,/g) ?? []).length;
   if (commaCount < 2) return false;
+
+  // Strong, low-cost signals first.
   if (/^ingredients\b/i.test(t)) return true;
   if (/^(aqua|water|eau)\b/i.test(t)) return true;
+
+  // Parenthesized water alias appears in most cosmetic lists.
+  const hasWaterParen = /\(\s*(?:water|aqua|eau)\s*\)/i.test(t);
+  if (hasWaterParen && commaCount >= 3) return true;
+
+  // Multi-signal scoring: count common INCI keywords. Three or more hits
+  // alongside the comma signal is reliable across brand layouts.
+  const keywordHits = (t.match(INCI_KEYWORDS) ?? []).length;
+  if (keywordHits >= 3 && commaCount >= 5) return true;
+
+  // Last resort: very dense comma-separated text with INCI-shaped tokens.
+  // "INCI-shaped" = capitalized words 2–60 chars, no sentence end inside.
+  const commaDensity = (commaCount / t.length) * 100;
+  if (commaDensity >= 3 && commaCount >= 10) return true;
+
   return false;
 }
 
 export function findIngredientsText(doc: Document): string | null {
-  // Strategy 1: documented data-at attribute. Sephora has used variations
-  // like data-at="ingredients" / "ingredient_list" in the past; try both.
-  for (const sel of ['[data-at="ingredients"]', '[data-at="ingredient_list"]']) {
+  // Strategy 1: Sephora's current accordion pattern. The trigger button has
+  // data-at="ingredients" with aria-controls="ingredients", and the panel
+  // is <div id="ingredients">. Prefer the panel — the trigger's textContent
+  // is just the literal word "Ingredients".
+  const panel = doc.getElementById('ingredients');
+  const panelText = panel?.textContent?.trim();
+  if (panelText && looksLikeIngredients(panelText)) return panelText;
+
+  // Strategy 2: documented data-at attributes. Older Sephora layouts put the
+  // INCI list directly inside data-at="ingredients" / "ingredient_list".
+  for (const sel of ['[data-at="ingredient_list"]', '[data-at="ingredients"]']) {
     const explicit = doc.querySelector(sel);
     const text = explicit?.textContent?.trim();
     if (text && looksLikeIngredients(text)) return text;
   }
 
-  // Strategy 2: walk the tree and collect every element whose text content
+  // Strategy 3: walk the tree and collect every element whose text content
   // looks like an ingredient list. Then pick the *smallest* — outer containers
   // also "look like" a list because their textContent transitively includes
   // the leaf node we actually want.
