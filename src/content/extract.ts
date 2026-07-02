@@ -1,47 +1,115 @@
-// Pure DOM + string functions for extracting product info from a Sephora
-// product page. Lives in its own module so it can be unit-tested in jsdom
-// without spinning up the MutationObserver runtime in `sephora.ts`.
+// Site-agnostic extraction engine. Pure DOM + string functions so it can be
+// unit-tested in jsdom without spinning up the MutationObserver runtime in
+// `main.ts`. Everything site-specific lives in a SiteAdapter (see sites/).
 //
-// Sephora's DOM ships UI updates regularly (PROJECT_BRIEF.md §9), so the
-// extraction is defensive: try the documented `data-at` selectors first,
-// then fall back to a text-content heuristic that finds the smallest block
-// of comma-separated ingredient-looking text.
+// Retail sites ship UI updates regularly, so extraction is layered from
+// most-stable to most-generic:
+//   1. schema.org Product JSON-LD for name/brand/SKU — retailers ship it for
+//      SEO and it changes far less often than markup.
+//   2. The adapter's selectors — the fast path for the current layout.
+//   3. A text-content heuristic that finds the smallest block of
+//      comma-separated ingredient-looking text anywhere on the page.
+// A redesign typically breaks layer 2 only; layers 1 and 3 keep the
+// extension working until the adapter's selectors are refreshed.
 
 import type { ExtractedProduct } from '@/lib/types';
+import type { SiteAdapter } from './sites';
+import { siteForUrl } from './sites';
 
 export interface ExtractAttempt {
   product: ExtractedProduct | null;
   reason?: 'not_product_page' | 'no_ingredients' | 'empty_ingredient_list';
 }
 
+/** True when the URL is a product page on any supported site. */
 export function isProductPage(url: string): boolean {
+  const adapter = siteForUrl(url);
+  if (!adapter) return false;
   try {
-    const u = new URL(url);
-    if (u.hostname !== 'www.sephora.com') return false;
-    return /^\/product(\/|$)/i.test(u.pathname);
+    return adapter.isProductPage(new URL(url));
   } catch {
     return false;
   }
 }
 
-// Sephora's product URL embeds a "P"-prefixed product id (e.g. ".../foo-P427418").
-// Variants add a `skuId` query param; prefer that when present because it
-// uniquely identifies the exact shade/size the shopper is looking at.
+/** Site-specific product/SKU id from the URL; '' when unsupported/absent. */
 export function parseSku(url: string): string {
+  const adapter = siteForUrl(url);
+  if (!adapter) return '';
   try {
-    const u = new URL(url);
-    const skuParam = u.searchParams.get('skuId');
-    if (skuParam) return skuParam;
-    const match = u.pathname.match(/P\d+/i);
-    if (match) return match[0];
-    return '';
+    return adapter.parseSku(new URL(url));
   } catch {
     return '';
   }
 }
 
+// ---------------------------------------------------------------------------
+// Layer 1: schema.org Product JSON-LD.
+
+export interface JsonLdProduct {
+  name?: string;
+  brand?: string;
+  sku?: string;
+}
+
+function collectJsonLdNodes(data: unknown, out: Record<string, unknown>[]): void {
+  if (Array.isArray(data)) {
+    for (const item of data) collectJsonLdNodes(item, out);
+    return;
+  }
+  if (data && typeof data === 'object') {
+    const node = data as Record<string, unknown>;
+    out.push(node);
+    if (node['@graph']) collectJsonLdNodes(node['@graph'], out);
+  }
+}
+
+export function extractJsonLdProduct(doc: Document): JsonLdProduct | null {
+  const scripts = Array.from(
+    doc.querySelectorAll('script[type="application/ld+json"]'),
+  );
+  for (const script of scripts) {
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(script.textContent ?? '');
+    } catch {
+      continue;
+    }
+    const nodes: Record<string, unknown>[] = [];
+    collectJsonLdNodes(parsed, nodes);
+    for (const node of nodes) {
+      const type = node['@type'];
+      const types = Array.isArray(type) ? type : [type];
+      if (!types.includes('Product')) continue;
+
+      const rawBrand = node.brand as unknown;
+      const brand =
+        typeof rawBrand === 'string'
+          ? rawBrand
+          : rawBrand && typeof rawBrand === 'object'
+            ? (rawBrand as Record<string, unknown>).name
+            : undefined;
+
+      return {
+        name: typeof node.name === 'string' ? node.name : undefined,
+        brand: typeof brand === 'string' ? brand : undefined,
+        sku:
+          typeof node.sku === 'string'
+            ? node.sku
+            : typeof node.productID === 'string'
+              ? node.productID
+              : undefined,
+      };
+    }
+  }
+  return null;
+}
+
+// ---------------------------------------------------------------------------
+// Layer 3 helpers: ingredient-list detection and parsing.
+
 // Find the INCI list within a text blob that may include a "Key Ingredient"
-// marketing prefix. Sephora brands prefix the panel with varied formats:
+// marketing prefix. Brands prefix the panel with varied formats:
 // "-Niacinamide: ... promotes visible skin radiance. Aqua (Water), ...",
 // "- Propolis Extract: hydrates...- BHA: gently exfoliates...Propolis
 // Extract, Dipropylene Glycol, ...", etc. The reliable signal is that the
@@ -86,11 +154,11 @@ export function parseIngredientText(raw: string): string[] {
     .filter((t) => t.length > 0);
 }
 
-// "Looks like an INCI list" detector. Sephora's per-brand prefixes vary too
-// much for prefix matching to be reliable (some lists start with Aqua, some
-// with Propolis Extract, some with a brand's hero active), so the strategy
-// is signal-based: count INCI-shaped tokens, parenthesized water aliases,
-// and overall comma density, and accept anything with strong signals.
+// "Looks like an INCI list" detector. Per-brand prefixes vary too much for
+// prefix matching to be reliable (some lists start with Aqua, some with
+// Propolis Extract, some with a brand's hero active), so the strategy is
+// signal-based: count INCI-shaped tokens, parenthesized water aliases, and
+// overall comma density, and accept anything with strong signals.
 const INCI_KEYWORDS = /\b(?:aqua|glycerin|niacinamide|tocopherol|phenoxyethanol|propanediol|butylene\s+glycol|dipropylene\s+glycol|cetearyl|hyaluronate|xanthan\s+gum|sodium\s+hydroxide|disodium\s+edta|ethylhexylglycerin|caprylic|behenyl|stearyl|cetyl\s+alcohol|panthenol|allantoin|hexanediol|polysorbate|carbomer|tromethamine)\b/gi;
 
 function looksLikeIngredients(text: string): boolean {
@@ -120,27 +188,26 @@ function looksLikeIngredients(text: string): boolean {
   return false;
 }
 
-export function findIngredientsText(doc: Document): string | null {
-  // Strategy 1: Sephora's current accordion pattern. The trigger button has
-  // data-at="ingredients" with aria-controls="ingredients", and the panel
-  // is <div id="ingredients">. Prefer the panel — the trigger's textContent
-  // is just the literal word "Ingredients".
-  const panel = doc.getElementById('ingredients');
-  const panelText = panel?.textContent?.trim();
-  if (panelText && looksLikeIngredients(panelText)) return panelText;
-
-  // Strategy 2: documented data-at attributes. Older Sephora layouts put the
-  // INCI list directly inside data-at="ingredients" / "ingredient_list".
-  for (const sel of ['[data-at="ingredient_list"]', '[data-at="ingredients"]']) {
-    const explicit = doc.querySelector(sel);
-    const text = explicit?.textContent?.trim();
+export function findIngredientsText(
+  doc: Document,
+  selectors: string[] = [],
+): string | null {
+  // Layer 2: the adapter's fast-path selectors for the current site layout.
+  for (const sel of selectors) {
+    let el: Element | null = null;
+    try {
+      el = doc.querySelector(sel);
+    } catch {
+      continue; // a bad selector in one adapter must not kill extraction
+    }
+    const text = el?.textContent?.trim();
     if (text && looksLikeIngredients(text)) return text;
   }
 
-  // Strategy 3: walk the tree and collect every element whose text content
-  // looks like an ingredient list. Then pick the *smallest* — outer containers
-  // also "look like" a list because their textContent transitively includes
-  // the leaf node we actually want.
+  // Layer 3: walk the tree and collect every element whose text content
+  // looks like an ingredient list. Then pick the *smallest* — outer
+  // containers also "look like" a list because their textContent
+  // transitively includes the leaf node we actually want.
   const root = doc.body ?? doc.documentElement;
   if (!root) return null;
 
@@ -162,29 +229,34 @@ export function findIngredientsText(doc: Document): string | null {
 
 function readText(doc: Document, selectors: string[]): string {
   for (const sel of selectors) {
-    const el = doc.querySelector(sel);
+    let el: Element | null = null;
+    try {
+      el = doc.querySelector(sel);
+    } catch {
+      continue;
+    }
     const text = el?.textContent?.trim();
     if (text) return text;
   }
   return '';
 }
 
-export function extractProduct(doc: Document, url: string): ExtractAttempt {
-  if (!isProductPage(url)) {
+export function extractProduct(
+  doc: Document,
+  url: string,
+  adapter: SiteAdapter | null = siteForUrl(url),
+): ExtractAttempt {
+  if (!adapter || !isProductPage(url)) {
     return { product: null, reason: 'not_product_page' };
   }
 
-  const name = readText(doc, [
-    'h1[data-at="product_name"]',
-    '[data-at="product_name"]',
-    'h1',
-  ]);
-  const brand = readText(doc, [
-    'a[data-at="brand_name"]',
-    '[data-at="brand_name"]',
-  ]);
+  const jsonLd = extractJsonLdProduct(doc);
 
-  const ingredientsText = findIngredientsText(doc);
+  const name = readText(doc, adapter.nameSelectors) || jsonLd?.name || '';
+  const rawBrand = readText(doc, adapter.brandSelectors) || jsonLd?.brand || '';
+  const brand = adapter.cleanBrand ? adapter.cleanBrand(rawBrand) : rawBrand;
+
+  const ingredientsText = findIngredientsText(doc, adapter.ingredientSelectors);
   if (!ingredientsText) {
     return { product: null, reason: 'no_ingredients' };
   }
@@ -198,7 +270,7 @@ export function extractProduct(doc: Document, url: string): ExtractAttempt {
     product: {
       name: name || 'Unknown product',
       brand,
-      sku: parseSku(url),
+      sku: parseSku(url) || jsonLd?.sku || '',
       ingredients_inci,
     },
   };

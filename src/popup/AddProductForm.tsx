@@ -93,8 +93,8 @@ export function AddProductForm({ onAdd }: Props) {
           className="w-full resize-none rounded border border-slate-300 px-2 py-1.5 text-xs leading-snug focus:border-slate-500 focus:outline-none"
         />
         <p className="mt-1 text-[11px] text-slate-500">
-          Tip: on a Sephora page, open the &ldquo;Ingredients&rdquo; section and
-          copy the whole list.
+          Tip: on a product page (Sephora, Ulta, Amazon), open the
+          &ldquo;Ingredients&rdquo; section and copy the whole list.
         </p>
       </div>
 

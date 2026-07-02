@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Hydro Boost Water Gel | Ulta Beauty</title>
+    <!--
+      Ulta-shaped fixture. Ulta blocks automated fetching, so this mirrors the
+      structures the adapter is designed around rather than a captured page:
+        - schema.org Product JSON-LD (the layer the extractor prefers for
+          name/brand — Ulta ships it for SEO)
+        - the INCI list inside a details/summary "Ingredients" accordion
+        - an "Add to bag" button (exercises the generic text-label anchor
+          fallback in banner.ts — no Sephora data-at attributes here)
+      If extraction breaks on real Ulta, update this fixture to match what the
+      live page actually renders, then fix the adapter until this passes.
+    -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        "name": "Hydro Boost Water Gel Moisturizer",
+        "brand": { "@type": "Brand", "name": "Neutrogena" },
+        "sku": "2266814"
+      }
+    </script>
+  </head>
+  <body>
+    <main>
+      <a href="/brand/neutrogena">Neutrogena</a>
+      <h1>Hydro Boost Water Gel Moisturizer</h1>
+
+      <section>
+        <h2>Summary</h2>
+        <p>A lightweight gel moisturizer for normal to combination skin.</p>
+      </section>
+
+      <details>
+        <summary>Ingredients</summary>
+        <div>
+          Water, Dimethicone, Glycerin, Dimethicone/Vinyl Dimethicone
+          Crosspolymer, Phenoxyethanol, Sodium Hyaluronate, Cetearyl Olivate,
+          Sorbitan Olivate, Carbomer, Ethylhexylglycerin, Dimethiconol,
+          Sodium Hydroxide, Blue 1
+        </div>
+      </details>
+
+      <div class="buy-box">
+        <button type="button">Add to bag</button>
+      </div>
+    </main>
+  </body>
+</html>

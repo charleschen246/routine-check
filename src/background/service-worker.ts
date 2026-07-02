@@ -1,6 +1,6 @@
-// Service worker entry. Receives the extracted product from the Sephora
-// content script, loads the user's routine + preferences from
-// chrome.storage.local, runs the analyzer, and ships the result back.
+// Service worker entry. Receives the extracted product from the content
+// script (any supported retail site), loads the user's routine + preferences
+// from chrome.storage.local, runs the analyzer, and ships the result back.
 
 import { analyze } from '@/lib/analyzer';
 import { conflictRules, gapRules, ingredients } from '@/lib/data';

@@ -1,8 +1,101 @@
 # Handoff — skincare extension
 
-**Last updated:** 2026-05-27
-**Project days completed:** §19 Days 1–8 (scaffold + seed data + analyzer + popup UI + Sephora content script + banner + privacy/terms docs)
+**Last updated:** 2026-07-02
+**Project days completed:** §19 Days 1–8 (scaffold + seed data + analyzer + popup UI + content script + banner + privacy/terms docs), plus the 2026-07-02 multi-site expansion (below)
 **Project days remaining:** Days 9–10 + launch prep
+
+---
+
+## 2026-07-02 — Multi-site expansion (owner-directed scope change)
+
+**The owner explicitly requested support for more retail sites** ("only having
+one site is useless"), overriding the brief's §3 "Sephora only in v1" rule.
+This is documented here per the operating principles in CLAUDE.md: the brief
+still says Sephora-only, but the owner's direct instruction supersedes it.
+The extension now supports **Sephora, Ulta, and Amazon** product pages.
+
+### The architecture (built for the owner's other request: maintainability)
+
+Everything site-specific now lives in one small "adapter" file per site under
+`src/content/sites/` (`sephora.ts`, `ulta.ts`, `amazon.ts`). An adapter
+declares: which URLs are product pages, how to read the SKU from the URL,
+selectors for name / brand / ingredients / accordion triggers / banner
+placement. The extraction engine (`src/content/extract.ts`), the shared
+content-script runtime (`src/content/main.ts`, replaces the old
+`sephora.ts` runtime), the banner, the service worker, and the analyzer are
+all site-agnostic. **Adding a retailer = one adapter file + one registry line
+(`sites/index.ts`) + a manifest match pattern + tests.**
+
+Extraction is layered so a site redesign degrades gracefully:
+
+1. **JSON-LD structured data** (schema.org `Product`) for name/brand/SKU —
+   retailers ship this for Google SEO and change it far less often than
+   their page markup.
+2. **The adapter's selectors** — the fast path for the current layout.
+3. **A generic "looks like an INCI list" text heuristic** that scans the
+   whole page and picks the smallest matching element — survives arbitrary
+   markup changes as long as the ingredient list is rendered as text.
+
+Banner placement has the same shape: adapter anchor selectors first, then a
+generic fallback that finds any button labeled "Add to Bag/Basket/Cart".
+
+### Runbook — when a site changes its layout and extraction breaks
+
+1. Open a product page on the affected site, open devtools → Console, filter
+   for `[Routine Check]`. The logs say which site was detected and which step
+   failed (`no ingredient list found within timeout (site: ulta)` etc.).
+2. Fix **only** that site's adapter file in `src/content/sites/` — update the
+   stale selectors to match the new markup.
+3. Update the matching fixture (`e2e/fixtures/<site>-product.html`) to mirror
+   the new markup, run `npm test` and `npm run test:e2e`, then `npm run build`
+   and ship the new version to the Chrome Web Store.
+4. Usually nothing breaks outright: layers 1 and 3 keep working through most
+   redesigns, so a stale adapter typically means "slower/less precise", not
+   "broken". The layered design is the maintenance strategy.
+5. (Deferred v2 idea, do not build now: fetch the selector config from a
+   remotely hosted JSON so selector fixes don't need a store re-review. MV3
+   allows remote *data*, not remote code — but it adds a network dependency
+   and a privacy-policy change, so it stays deferred until breakage frequency
+   justifies it.)
+
+### What changed on disk
+
+- `src/content/sites/{types,index,sephora,ulta,amazon}.ts` — new adapter layer.
+- `src/content/extract.ts` — now generic; added `extractJsonLdProduct` (layer 1)
+  and selector-list parameters; same public functions otherwise.
+- `src/content/main.ts` — replaces `src/content/sephora.ts` as the single
+  content script for all sites; adds a generic "closed accordion labeled
+  Ingredients" expander alongside the adapter-specific triggers.
+- `src/content/banner.ts` — `findInjectionAnchor(doc, anchorSelectors?)` +
+  generic add-to-cart text fallback; `showBanner` accepts `anchorSelectors`.
+- `manifest.json` — version 0.2.0; host permissions + content-script matches
+  for `www.ulta.com/p/*` and `www.amazon.com` product paths (`/dp/*`,
+  `/*/dp/*`, `/gp/product/*`). Note for Day 9: the §16.10 checklist line
+  "only the Sephora host permission" is superseded by this owner decision —
+  the permission set is still minimal (storage + the three retail hosts,
+  product pages only for injection).
+- Popup tip copy and privacy policy / docs updated from "Sephora" to the
+  three sites. Privacy policy "Last updated" bumped to 2026-07-02.
+- Tests: `tests/sites.test.ts` (18 new unit tests), `e2e/multi-site.spec.ts`
+  + Ulta/Amazon fixtures (2 new e2e tests). Suite is now **101 unit + 7 e2e**.
+- `e2e/fixtures/extension.ts` — optional `ROUTINE_CHECK_CHROMIUM` env var to
+  point at a pre-installed Chromium (needed in sandboxed CI environments
+  whose Playwright browser cache doesn't match the pinned version; leave
+  unset locally).
+
+### Verified vs. NOT verified
+
+- ✅ 101 unit tests + 7 Playwright e2e tests pass; `npm run build` clean.
+- ✅ Sephora behavior is unchanged (all pre-existing tests pass untouched).
+- ❌ **Ulta and Amazon have NOT been verified against live pages.** Both
+  sites block automated fetching from the build environment, so the adapters
+  were built from their long-stable public page structure (Amazon's
+  `#productTitle` / `#bylineInfo` / `#important-information` ids; Ulta's
+  JSON-LD + accordion) and the fixtures mirror that. **Next agent or owner:
+  open 2–3 real product pages on each site with the extension loaded and
+  confirm the console logs + banner appear** — same live-verification step
+  Sephora went through on 2026-05-28 (see below). If something misses, the
+  runbook above applies.
 
 ---
 
@@ -26,9 +119,9 @@ The encoding choices from the previous session still hold:
 
 `npm run build` produces a working `dist/` that loads in Chrome via `chrome://extensions` → Load unpacked. Verified: dist contains the manifest with bundled service worker, popup HTML, options HTML, and content script.
 
-`npm test` runs the full Vitest suite — 15 analyzer tests + 20 popup component tests + 23 extract tests + 20 banner tests + 2 options tests = **80/80 passing**. Component tests use `@testing-library/react` + `jsdom`; chrome APIs are stubbed via `tests/setup.ts`. Setup file uses `vi.stubGlobal('chrome', …)` and exposes test helpers on `globalThis.__testHelpers` to avoid a Windows-only module-duplication bug where importing `./setup` directly yielded a second module instance with separate mocks.
+`npm test` runs the full Vitest suite — analyzer + popup components + extraction + banner + options + multi-site adapters = **101/101 passing** (as of 2026-07-02). Component tests use `@testing-library/react` + `jsdom`; chrome APIs are stubbed via `tests/setup.ts`. Setup file uses `vi.stubGlobal('chrome', …)` and exposes test helpers on `globalThis.__testHelpers` to avoid a Windows-only module-duplication bug where importing `./setup` directly yielded a second module instance with separate mocks.
 
-`npm run test:e2e` runs the Playwright suite (5 tests) against the built `dist/` extension in a real Chromium. **Run `npm run build` first** — Playwright loads `dist/` directly.
+`npm run test:e2e` runs the Playwright suite (7 tests, including Ulta + Amazon) against the built `dist/` extension in a real Chromium. **Run `npm run build` first** — Playwright loads `dist/` directly.
 
 `npm run dev` will start Vite's dev server with HMR for the popup; the extension itself still needs `npm run build` and an unpacked load when iterating on the manifest or content script.
 
@@ -91,7 +184,7 @@ In priority order:
 
 1. **Read `PROJECT_BRIEF.md` end-to-end** if you haven't — §16 is non-negotiable.
 2. **Read `CLAUDE.md`** for owner-communication rules.
-3. **Verify Days 6 + 7 against a real Sephora page.** The selectors in `src/content/extract.ts` and `src/content/banner.ts:findInjectionAnchor` are the §9 documented ones (`h1[data-at="product_name"]`, `a[data-at="brand_name"]`, `[data-at="ingredients"]`, `[data-at="add_to_basket_btn_container"]`), but Sephora ships UI updates regularly. Manually visit two or three product pages, open the page's devtools console, and confirm both the "[Routine Check] extracted product:" log and the banner host (`#routine-check-banner-host`) appear in a sensible place (banner just below "Add to Bag"). If it doesn't, update the anchor list + the e2e fixture (`e2e/fixtures/sephora-product.html`) to match.
+3. **Verify Ulta and Amazon against real pages** (Sephora was verified live 2026-05-28; the other two could not be reached from the build environment — see the 2026-07-02 section above). All site selectors now live in `src/content/sites/<site>.ts`. Manually visit two or three product pages per site, open the page's devtools console, and confirm both the "[Routine Check] extracted product:" log and the banner host (`#routine-check-banner-host`) appear in a sensible place (banner near "Add to Bag/Cart"). If not, follow the runbook in the 2026-07-02 section.
 4. **Day 8 (Privacy Policy + ToS):** use the §16.5 and §16.6 templates; host on GitHub Pages or Notion. Link from the popup footer (already wired with a Preferences link — extend or replace), the options page, and the eventual Chrome Web Store listing.
 5. Whenever you touch user-facing strings, walk the §16.2 forbidden / allowed table.
 
@@ -149,10 +242,10 @@ The popup, options page, and store listing will all update.
 For an owner who doesn't code, these are the only commands needed:
 
 1. `npm install` once (installs dependencies; safe to skip if already done).
-2. `npm test` — runs the unit tests. Should print "Tests 80 passed".
+2. `npm test` — runs the unit tests. Should print "Tests 101 passed".
 3. `npm run build` — produces the `dist/` folder.
-4. `npm run test:e2e` *(optional)* — runs the Playwright tests against the real built extension in headless Chromium. Requires `npm run build` to have produced `dist/` first. Should print "5 passed".
-5. In Chrome: open `chrome://extensions`, turn on "Developer mode" top-right, click "Load unpacked", select the `dist/` folder. The extension icon (currently a generic puzzle piece — icons not added yet) will appear; clicking it shows the popup. Visit any `https://www.sephora.com/product/...` page — the analysis banner should appear near the "Add to Bag" button. Open the page's devtools console and you should also see lines starting with `[Routine Check] extracted product:` and `[Routine Check] analysis:`.
+4. `npm run test:e2e` *(optional)* — runs the Playwright tests against the real built extension in headless Chromium. Requires `npm run build` to have produced `dist/` first. Should print "7 passed".
+5. In Chrome: open `chrome://extensions`, turn on "Developer mode" top-right, click "Load unpacked", select the `dist/` folder. The extension icon (currently a generic puzzle piece — icons not added yet) will appear; clicking it shows the popup. Visit any product page on Sephora (`/product/...`), Ulta (`/p/...`), or Amazon (`/dp/...`) — the analysis banner should appear near the "Add to Bag"/"Add to Cart" button. Open the page's devtools console and you should also see lines starting with `[Routine Check] site:`, `[Routine Check] extracted product:`, and `[Routine Check] analysis:`.
 
 ---
 

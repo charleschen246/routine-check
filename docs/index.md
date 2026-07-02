@@ -5,7 +5,8 @@ title: Routine Check — Legal
 # Routine Check
 
 Routine Check is a Chrome extension that helps skincare shoppers see whether
-a product on Sephora.com fits the routine they already own.
+a product on Sephora.com, Ulta.com, or Amazon.com fits the routine they
+already own.
 
 ## Legal documents
 
