@@ -33,6 +33,11 @@ export const test = base.extend<ExtensionFixtures>({
     // headless mode via the `--headless=new` flag.
     const context = await chromium.launchPersistentContext('', {
       headless: false,
+      // Some CI/sandbox environments pre-install a Chromium whose version
+      // doesn't match this Playwright release; they expose the binary via
+      // this env var. Locally leave it unset — Playwright's own download is
+      // used, same as before.
+      executablePath: process.env.ROUTINE_CHECK_CHROMIUM || undefined,
       args: [
         '--headless=new',
         // Required so other extensions (e.g. dev-installed) don't interfere.

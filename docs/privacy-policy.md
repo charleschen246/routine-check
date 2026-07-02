@@ -1,6 +1,6 @@
 # Privacy Policy for Routine Check
 
-**Last updated:** 2026-05-27
+**Last updated:** 2026-07-02
 
 ## Summary
 
@@ -16,8 +16,8 @@ anyone, including the developer.
   pigmentation interest, anti-aging interest). These are user preferences
   for tailoring on-screen analysis — not medical conditions or health records.
 - **Per-page dismissals.** When you dismiss the on-page analysis banner for
-  a specific Sephora product, we remember the product's SKU so the banner
-  does not re-appear for that product on a later visit.
+  a specific product, we remember the product's SKU so the banner does not
+  re-appear for that product on a later visit.
 
 ## Where Data Is Stored
 
@@ -30,8 +30,9 @@ process, or store your information.
 We do not collect: your name, email address, location, browsing history,
 IP address, payment information, account credentials, or any data outside
 what you explicitly enter into the extension. The extension only runs on
-pages under `https://www.sephora.com/` — it cannot see or read any other
-website you visit.
+product pages under `https://www.sephora.com/`, `https://www.ulta.com/`,
+and `https://www.amazon.com/` — it cannot see or read any other website
+you visit.
 
 ## Third Parties
 

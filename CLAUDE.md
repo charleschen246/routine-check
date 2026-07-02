@@ -2,7 +2,7 @@
 
 ## What this is
 
-A Chrome extension that tells skincare shoppers whether a product on a Sephora page fits their existing routine. **Read `PROJECT_BRIEF.md` first — it is the source of truth for every scope, design, and compliance decision.** This file is just the orientation layer.
+A Chrome extension that tells skincare shoppers whether a product on a Sephora, Ulta, or Amazon page fits their existing routine. **Read `PROJECT_BRIEF.md` first — it is the source of truth for every scope, design, and compliance decision.** This file is just the orientation layer.
 
 ## Owner profile — important
 
@@ -19,9 +19,9 @@ The owner is **non-technical in both coding and skincare**. They cannot read cod
 2. **§16 (Legal & Compliance) is the most important section.** Every user-facing string must pass the §16.2 forbidden/allowed phrasings table. Never make drug claims (treats / cures / prevents / heals / eliminates). Never use scare language (toxic / carcinogen / endocrine disruptor). Never diagnose.
 3. **Every claim needs a source.** §18 lists the approved domains: PubMed, AAD, DermNet NZ, INCIDecoder, Lab Muffin Beauty Science, The Beauty Brains. Never invent source URLs — fetch and verify before committing.
 4. **Test case #9 (niacinamide + vitamin C) is sacred.** Do not flag this as a conflict. It is a debunked myth (§8c). Including it would tank credibility with the target audience.
-5. **Sephora only in v1.** No Ulta, no Amazon. Scope creep is the #1 failure mode (§3, §15).
+5. **Supported sites: Sephora, Ulta, Amazon — and no more.** The brief says Sephora-only (§3, §15), but the owner explicitly directed the expansion to Ulta and Amazon on 2026-07-02 (see `HANDOFF.md`). That decision is settled; do not add further retailers without another explicit owner instruction. Scope creep is still the #1 failure mode.
 6. **No LLMs in v1.** All analysis is rule-based and deterministic (§5).
-7. **Minimal Chrome permissions.** Only `storage` and `https://www.sephora.com/*`. No `<all_urls>`, no `tabs`, no `activeTab` (§13, §15).
+7. **Minimal Chrome permissions.** Only `storage` and the three retail hosts (`https://www.sephora.com/*`, `https://www.ulta.com/*`, `https://www.amazon.com/*`), with content scripts injected on product-page URL patterns only. No `<all_urls>`, no `tabs`, no `activeTab` (§13, §15).
 8. **No backend in v1.** Everything in `chrome.storage.local` (§5).
 
 ## Tone of voice (binding — see §16.2 for full table)
@@ -48,6 +48,8 @@ See `HANDOFF.md` for the running ledger of what's built, what's missing, and wha
 
 ## Things that are *not* obvious from the brief
 
+- **Multi-site support (2026-07-02) is owner-directed and overrides §3 of the brief.** Everything site-specific lives in `src/content/sites/` — one adapter file per retailer plus a registry. Extraction is layered (JSON-LD structured data → adapter selectors → generic INCI-text heuristic) so a retailer redesign degrades gracefully instead of breaking. When extraction breaks on one site, fix only that site's adapter file — the runbook is in `HANDOFF.md`. Sephora's selectors were verified live (2026-05-28); **Ulta's and Amazon's were not** (both sites block automated fetching) — they lean on the JSON-LD and heuristic layers and still need a live spot-check.
+- **e2e in sandboxed environments:** if Playwright reports its browser is missing, point `ROUTINE_CHECK_CHROMIUM` at a Chromium binary (in Claude's cloud sandbox: `/opt/pw-browsers/chromium`). Leave it unset locally.
 - **Schema gaps.** The data-file schemas in §7 cannot cleanly express every rule in §8b and §8d. Two known cases: the "vitamin C used PM only" timing rule (no schema slot for it) and the gap rules with conditions ("missing barrier when 2+ actives", "missing antioxidant when user opts into anti-aging"). The conditional rules were extended with a `condition` field that isn't in §7. The cleanser gap rule uses `required_function: "cleanser"` which isn't in the `IngredientFunction` union. These deviations are documented in `HANDOFF.md`.
 - **`MULTI_ACTIVE` sentinel.** `conflict-rules.json` uses this string in `ingredient_a` / `ingredient_b` for the "3+ actives in same slot" rule. The analyzer needs special-case logic for it.
 - **Adapalene + benzoyl peroxide.** This is the documented exception in §8b. A separate rule of `type: "synergy"` (`adapalene_benzoyl_peroxide_synergy`) is included for this exception. The analyzer must check synergy rules *first* and use them to suppress matching conflict rules — without that, an adapalene + benzoyl peroxide user would be wrongly warned (test case #5 in §14 guards against this).
@@ -66,13 +68,17 @@ skincare-extension/
 ├── CLAUDE.md                  # this file
 ├── HANDOFF.md                 # running state ledger
 ├── package.json               # npm scripts: dev / build / test
-├── manifest.json              # MV3, storage + sephora.com only
+├── manifest.json              # MV3, storage + sephora/ulta/amazon product pages
 ├── vite.config.ts, tsconfig.json, tailwind/postcss configs
 ├── src/
-│   ├── background/service-worker.ts   # stub
-│   ├── content/sephora.ts             # stub
-│   ├── popup/  (index.html + React)   # stub UI
-│   ├── options/ (index.html + React)  # stub UI
+│   ├── background/service-worker.ts   # analysis round-trip + routine-editor open
+│   ├── content/
+│   │   ├── main.ts           # shared runtime for all sites (hydration wait, expand, analyze, banner)
+│   │   ├── extract.ts        # site-agnostic engine (JSON-LD → selectors → heuristic)
+│   │   ├── banner.ts         # shadow-DOM banner (per-site anchors + add-to-cart fallback)
+│   │   └── sites/            # ONE FILE PER RETAILER: sephora.ts / ulta.ts / amazon.ts + registry
+│   ├── popup/  (index.html + React)   # routine management UI
+│   ├── options/ (index.html + React)  # settings stub + disclaimer/links
 │   ├── lib/
 │   │   ├── types.ts          # all shared TS types (with the two §7 deviations)
 │   │   ├── data.ts           # typed imports of the three JSON files
@@ -83,9 +89,11 @@ skincare-extension/
 │       ├── ingredients.json
 │       ├── conflict-rules.json
 │       └── gap-rules.json
-├── tests/
+├── tests/                    # Vitest: analyzer, popup, extract, banner, sites
 │   ├── analyzer.test.ts      # 15 §14 acceptance cases (all passing)
+│   ├── sites.test.ts         # adapter registry + Ulta/Amazon/JSON-LD coverage
 │   └── fixtures/sample-routines.ts
+├── e2e/                      # Playwright specs + per-site HTML fixtures
 └── dist/                     # produced by `npm run build`
 ```
 
@@ -97,7 +105,7 @@ The owner is non-technical and cannot reliably click through every change to ver
 
 Before reporting any code change as done, run both:
 
-- `npm test` — the full Vitest suite must be green. The current count is **34 tests passing** (15 analyzer + 19 popup component tests); the number will grow as more features land. If a test fails after a change, do not ship — diagnose and fix the root cause rather than skipping/relaxing the test.
+- `npm test` — the full Vitest suite must be green. The current count is **101 tests passing** (analyzer, popup, extraction, banner, options, multi-site adapters); the number will grow as more features land. If a test fails after a change, do not ship — diagnose and fix the root cause rather than skipping/relaxing the test. There is also a 7-test Playwright e2e suite: `npm run build` then `npm run test:e2e`.
 - `npm run build` — runs the TypeScript type-check and produces `dist/`. If types break, fix them rather than loosening them with `any` or `// @ts-ignore`.
 
 ### Add new tests as you add new features
@@ -115,7 +123,7 @@ Be honest in the end-of-task summary about what you did and did not verify:
 
 - Visual layout, spacing, contrast, font rendering in the real Chrome popup
 - Real `chrome.storage.local` behavior (the mock is faithful but not identical)
-- The on-page banner against a live Sephora page (until Playwright or similar is added later)
+- The on-page banner against *live* retailer pages (the Playwright e2e suite uses local HTML fixtures shaped like each site, not the real sites — live layouts can drift from the fixtures)
 - Keyboard focus and accessibility edge cases not covered by the test
 
 For changes in those areas, either ask the owner to spot-check with clear plain-English instructions ("open `chrome://extensions`, turn on Developer mode, click Load unpacked, pick the `dist` folder, then click the puzzle-piece icon and pin Routine Check"), or note explicitly in the summary that visual verification is still pending. Never claim a UI feature works visually when you only verified it with jsdom.

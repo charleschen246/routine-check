@@ -1,11 +1,11 @@
 // Day 7 banner. Renders an `AnalysisResult` inside a shadow root attached to
-// the Sephora product page so Sephora's stylesheet can't bleed in and ours
-// can't bleed out. All copy here must pass PROJECT_BRIEF.md §16.2 — keep that
-// table open if you touch this file.
+// the retailer's product page so the host site's stylesheet can't bleed in
+// and ours can't bleed out. All copy here must pass PROJECT_BRIEF.md §16.2 —
+// keep that table open if you touch this file.
 //
 // Pure DOM (no React) per §5 of the brief: content scripts ship vanilla JS
-// to keep the bundle small and to reduce the chance of breaking Sephora's
-// own page-script.
+// to keep the bundle small and to reduce the chance of breaking the host
+// site's own page-script.
 
 import type {
   AnalysisGapFill,
@@ -13,6 +13,7 @@ import type {
   AnalysisWarning,
   Severity,
 } from '@/lib/types';
+import { sephora } from './sites';
 
 export const BANNER_HOST_ID = 'routine-check-banner-host';
 export const DISMISS_STORAGE_KEY = 'banner_dismissed_skus';
@@ -28,8 +29,11 @@ export interface BannerInput {
 
 export interface BannerOptions {
   // Override the routine-editor action — used by unit tests and so the
-  // sephora.ts wrapper can route through the service worker.
+  // content-script runtime can route through the service worker.
   onEditRoutine?: () => void;
+  // Site-specific injection anchors (SiteAdapter.anchorSelectors). Defaults
+  // to Sephora's for backward compatibility.
+  anchorSelectors?: string[];
 }
 
 export interface RenderedBanner {
@@ -215,7 +219,7 @@ export function buildBanner(
 
   const host = doc.createElement('div');
   host.id = BANNER_HOST_ID;
-  // Inline reset so Sephora's cascading styles can't shrink/hide the host.
+  // Inline reset so the host site's cascading styles can't shrink/hide the host.
   host.style.cssText = 'all: initial; display: block; contain: layout style;';
 
   const shadow = host.attachShadow({ mode: 'open' });
@@ -310,25 +314,34 @@ export function buildBanner(
   };
 }
 
-// Stable injection anchor for a Sephora product page. Try the documented
-// add-to-basket container first; fall back to nearby anchors so we still
-// land somewhere predictable when Sephora reshuffles markup.
-export function findInjectionAnchor(doc: Document): Element | null {
-  const candidates = [
-    '[data-at="add_to_basket_btn_container"]',
-    '[data-at="add-to-basket-btn-container"]',
-    // Current Sephora layout: the button itself carries the data-at attribute,
-    // with a "_small_view" duplicate for the mobile breakpoint. Inserting
-    // after either is fine — only the visible one has a visible parent.
-    'button[data-at="add_to_basket_btn"]',
-    'button[data-at="add_to_basket_btn_small_view"]',
-    'button[data-at="add-to-basket-btn"]',
-    'button[data-at="add_to_basket"]',
-    'h1[data-at="product_name"]',
-  ];
-  for (const sel of candidates) {
-    const el = doc.querySelector(sel);
+// Stable injection anchor for a product page. Try the site adapter's
+// selectors first (most preferred first); fall back to any button whose
+// visible label is "Add to Bag/Basket/Cart" so the banner still lands
+// somewhere sensible when a site reshuffles its markup.
+const ADD_TO_CART_TEXT = /^\s*add to (bag|basket|cart)\s*$/i;
+
+export function findInjectionAnchor(
+  doc: Document,
+  anchorSelectors: string[] = sephora.anchorSelectors,
+): Element | null {
+  for (const sel of anchorSelectors) {
+    let el: Element | null = null;
+    try {
+      el = doc.querySelector(sel);
+    } catch {
+      continue; // a bad selector in one adapter must not kill injection
+    }
     if (el) return el;
+  }
+
+  const buttons = doc.querySelectorAll('button, input[type="submit"]');
+  for (const btn of Array.from(buttons)) {
+    const label =
+      btn.textContent?.trim() ||
+      btn.getAttribute('value') ||
+      btn.getAttribute('aria-label') ||
+      '';
+    if (ADD_TO_CART_TEXT.test(label)) return btn;
   }
   return null;
 }
@@ -344,7 +357,7 @@ export async function showBanner(
   doc.getElementById(BANNER_HOST_ID)?.remove();
 
   const rendered = buildBanner(input, doc, options);
-  const anchor = findInjectionAnchor(doc);
+  const anchor = findInjectionAnchor(doc, options.anchorSelectors ?? sephora.anchorSelectors);
   if (anchor) {
     anchor.insertAdjacentElement('afterend', rendered.host);
   } else {
